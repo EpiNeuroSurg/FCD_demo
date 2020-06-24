@@ -1,0 +1,54 @@
+bash
+export FREESURFER_HOME=/usr/local/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+for s in `cat bu.txt`
+do
+# creates Identidy.dat - a transormation matrix required for sampling intensities with surfaces. In this case an identity matrix as volumes are already coregistered
+bbregister --s $s --mov $s --mov $s/mri/brainmask.mgz --reg $s/mri/transforms/Identity.dat --init-fsl --t1
+H="lh rh"
+for h in $H
+do
+## Feature 1. Gradient
+pctsurfcon --s $s --gm-proj-abs 0.5 --wm-proj-abs 0.5 --neg --b gradient
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".gradient.mgh --o $s/surf/"$h".gradient.sm5.mgh
+
+D_gm="0.5"
+for d_gm in $D_gm
+do
+## Feature 2&3. Intracortical FLAIR&PET
+# sampling volume to surface
+mri_vol2surf --src $s/mri/FLAIR.mgz --out $s/surf/"$h".gm_FLAIR_"$d_gm".mgh --hemi "$h" --projfrac "$d_gm" --srcreg $s/mri/transforms/Identity.dat --trgsubject $s --surf white
+mri_vol2surf --src $s/mri/PET.mgz --out $s/surf/"$h".gm_PET_"$d_gm".mgh --hemi "$h" --projfrac "$d_gm" --srcreg $s/mri/transforms/Identity.dat --trgsubject $s --surf white
+# smoothing
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".gm_FLAIR_"$d_gm".mgh --o $s/surf/"$h".gm_FLAIR_"$d_gm".sm5.mgh
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 8 --i $s/surf/"$h".gm_PET_"$d_gm".mgh --o $s/surf/"$h".gm_PET_"$d_gm".sm8.mgh
+done
+
+D_wm="2"
+for d_wm in $D_wm
+do
+## Feature 4. Myeline ratio
+# Sample FLAIR 2mm subcortically & smooth using 5mm Gaussian kernel
+mri_vol2surf --src $s/mri/T1.mgz --out $s/surf/"$h".wm_T1_"$d_wm".mgh --hemi "$h" --projdist -"$d_wm" --srcreg $s/mri/transforms/Identity.dat --trgsubject $s --surf white
+mri_vol2surf --src $s/mri/T2.mgz --out $s/surf/"$h".wm_T2_"$d_wm".mgh --hemi "$h" --projdist -"$d_wm" --srcreg $s/mri/transforms/Identity.dat --trgsubject $s --surf white
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".wm_T1_"$d_wm".mgh --o $s/surf/"$h".wm_T1_"$d_wm".sm5.mgh
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".wm_T2_"$d_wm".mgh --o $s/surf/"$h".wm_T2_"$d_wm".sm5.mgh
+mris_calc --output $s/surf/"$h".myeline_2.sm5.mgh $s/surf/"$h".wm_T1_2.sm5.mgh div $s/surf/"$h".wm_T2_2.sm5.mgh
+done
+
+## Feature 5. Thickness
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".thickness --o $s/surf/"$h".thickness.sm5.mgh
+## Feature 6. Blurring
+mris_fwhm --s $s --hemi "$h" --cortex --smooth-only --fwhm 5 --i $s/surf/"$h".w-g.pct.mgh --o $s/surf/"$h".w-g.pct.sm5.mgh
+
+# Calculate curvature 
+mris_curvature_stats -f white -g --writeCurvatureFiles $s "$h" curv 
+mris_curvature_stats -f pial -g --writeCurvatureFiles $s "$h" curv
+# Convert mean curvature to .mgh file type
+mris_convert -c $s/surf/"$h".curv $s/surf/"$h".white $s/surf/"$h".curv.mgh
+## Feature 7. cortical complexity (curvature/thickness)
+mris_calc --output $s/surf/"$h".complexity.sm5.mgh $s/surf/"$h".curv.mgh div $s/surf/"$h".thickness.sm5.mgh
+done
+done

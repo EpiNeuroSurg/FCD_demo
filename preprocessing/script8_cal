@@ -1,0 +1,173 @@
+hipposubfields.lh.T1.v21.stats
+lh.hippoAmygLabels-T1.v21.mgz
+gtm.stats.dat
+lh.thickness_z_on_lh.sm.mgh
+lh.w-g.pct_z_on_lh.sm.mgh
+lh.complexity_z_on_lh.sm.mgh
+lh.myeline_2_z_on_lh.sm.mgh
+lh.gm_FLAIR_0.5_z_on_lh.sm.mgh
+lh.gradient_z_on_lh.sm.mgh
+lh.gm_PET_0.5_z_on_lh.sm.mgh
+
+SUBJECTS_DIR=$PWD
+for s in `cat all.txt`; do
+H="lh rh"
+for h in $H
+do
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".thickness_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".thickness_z.sm.stats --snr
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".w-g.pct_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".w-g.pct_z.sm.stats --snr
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".complexity_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".complexity_z.sm.stats --snr
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".myeline_2_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".myeline_2_z.sm.stats --snr
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".gm_FLAIR_0.5_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".gm_FLAIR_0.5_z.sm.stats --snr
+mri_segstats --in ${SUBJECTS_DIR}/$s/surf/"$h".gradient_z.sm.mgh --annot $s "$h" aparc --sum ${SUBJECTS_DIR}/$s/xhemi/stats/"$h".gradient_z.sm.stats --snr
+done
+done
+
+rm left_data.csv
+echo "patient,eTIV,whole_hippo,CA1-body,CA1-head,CA3-body,CA3-head,CA4-head,CA4-body,GC-ML-DG-head,GC-ML-DG-body,hippo_flair,\
+ento_thick,fus_thick,inf_thick,mid_thick,para_thick,sup_thick,pole_thick,tran_thick,\
+ento_blur,fus_blur,inf_blur,mid_blur,para_blur,sup_blur,pole_blur,tran_blur,\
+ento_comp,fus_comp,inf_comp,mid_comp,para_comp,sup_comp,pole_comp,tran_comp,\
+ento_myeline,fus_myeline,inf_myeline,mid_myeline,para_myeline,sup_myeline,pole_myeline,tran_myeline,\
+ento_FLAIR,fus_FLAIR,inf_FLAIR,mid_FLAIR,para_FLAIR,sup_FLAIR,pole_FLAIR,tran_FLAIR,\
+ento_gradient,fus_gradient,inf_gradient,mid_gradient,para_gradient,sup_gradient,pole_gradient,tran_gradient,\
+" > left_data.csv
+
+for s in `cat all.txt`; do
+echo "$s,\
+`cat ${SUBJECTS_DIR}/$s/stats/aseg.stats | grep EstimatedTotalIntraCranialVol | awk -F, '{ print $4 }'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep Whole_hippocampus | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA1-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA1-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA3-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA3-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA4-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep CA4-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep GC-ML-DG-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.lh.T1.v21.stats | grep GC-ML-DG-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/gtmpvc.FLAIR/gtm.stats.dat | grep Left-Hippocampus | awk '{print $7}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.thickness_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.w-g.pct_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.complexity_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.myeline_2_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gm_FLAIR_0.5_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/lh.gradient_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+" >> left_data.csv
+done
+
+rm right_data.csv
+echo "patient,eTIV,whole_hippo,CA1-body,CA1-head,CA3-body,CA3-head,CA4-head,CA4-body,GC-ML-DG-head,GC-ML-DG-body,hippo_flair,\
+ento_thick,fus_thick,inf_thick,mid_thick,para_thick,sup_thick,pole_thick,tran_thick,\
+ento_blur,fus_blur,inf_blur,mid_blur,para_blur,sup_blur,pole_blur,tran_blur,\
+ento_comp,fus_comp,inf_comp,mid_comp,para_comp,sup_comp,pole_comp,tran_comp,\
+ento_myeline,fus_myeline,inf_myeline,mid_myeline,para_myeline,sup_myeline,pole_myeline,tran_myeline,\
+ento_FLAIR,fus_FLAIR,inf_FLAIR,mid_FLAIR,para_FLAIR,sup_FLAIR,pole_FLAIR,tran_FLAIR,\
+ento_gradient,fus_gradient,inf_gradient,mid_gradient,para_gradient,sup_gradient,pole_gradient,tran_gradient,\
+" > right_data.csv
+
+for s in `cat all.txt`; do
+echo "$s,\
+`cat ${SUBJECTS_DIR}/$s/stats/aseg.stats | grep EstimatedTotalIntraCranialVol | awk -F, '{ print $4 }'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep Whole_hippocampus | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA1-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA1-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA3-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA3-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA4-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep CA4-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep GC-ML-DG-head | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/stats/hipposubfields.rh.T1.v21.stats | grep GC-ML-DG-body | awk '{print $4}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/gtmpvc.FLAIR/gtm.stats.dat | grep Right-Hippocampus | awk '{print $7}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.thickness_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.w-g.pct_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.complexity_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.myeline_2_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gm_FLAIR_0.5_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep entorhinal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep fusiform | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep inferiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep middletemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep parahippocampal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep superiortemporal | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep temporalpole | awk '{print $6}'| sed 's/\ //g'`,\
+`cat ${SUBJECTS_DIR}/$s/xhemi/stats/rh.gradient_z.sm.stats | grep transversetemporal | awk '{print $6}'| sed 's/\ //g'`,\
+" >> right_data.csv
+done
+

@@ -1,0 +1,20 @@
+bash
+export FREESURFER_HOME=/usr/local/freesurfer_de
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+## segment
+for s in `cat hippo2.txt`; do
+segmentHA_T1.sh $s
+done
+
+## QC
+for s in `cat bu.txt`; do
+freeview -v $s/mri/nu.mgz -v $s/mri/lh.hippoAmygLabels-T1.v21.mgz:colormap=lut -v $s/mri/rh.hippoAmygLabels-T1.v21.mgz:colormap=lut
+done
+
+## calculation
+quantifyHAsubregions.sh hippoSf T1 vol_hippo.csv
+quantifyHAsubregions.sh amygNuc T1 vol_amy.csv
+
+

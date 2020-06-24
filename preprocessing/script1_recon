@@ -1,0 +1,19 @@
+ls images/ >list.txt
+
+bash
+export FREESURFER_HOME=/usr/local/freesurfer_de
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+for s in `cat bu.txt`;
+do
+recon-all -s $s -i /media/mo/SAMSUNG1/2020/temporal_cases/images/control/$s/anat.nii -FLAIR /media/mo/SAMSUNG1/2020/temporal_cases/images/control/$s/flair.nii -FLAIRpial -all -parallel -openmp 4
+segmentHA_T1.sh $s
+done
+
+bash
+export FREESURFER_HOME=/usr/local/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+

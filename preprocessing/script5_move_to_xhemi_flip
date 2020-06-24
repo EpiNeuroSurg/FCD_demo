@@ -1,0 +1,29 @@
+bash
+export FREESURFER_HOME=/usr/local/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+Measures="gradient gm_FLAIR_0.5 gm_PET_0.5 myeline_2 thickness w-g.pct complexity"
+
+for s in `cat bu.txt`
+do 
+surfreg --s $s --t fsaverage_sym --lh --xhemi 
+for m in $Measures
+do
+mris_apply_reg --src $s/surf/lh."$m"_z.sm.mgh --trg $s/xhemi/surf/lh."$m"_z_on_lh.sm.mgh --streg $SUBJECTS_DIR/$s/surf/lh.sphere.reg $SUBJECTS_DIR/fsaverage_sym/surf/lh.sphere.reg
+mris_apply_reg --src $s/surf/rh."$m"_z.sm.mgh --trg $s/xhemi/surf/rh."$m"_z_on_lh.sm.mgh --streg $SUBJECTS_DIR/$s/xhemi/surf/lh.fsaverage_sym.sphere.reg $SUBJECTS_DIR/fsaverage_sym/surf/lh.sphere.reg
+done
+done
+
+####### right side
+Measures="gradient gm_PET_0.5"
+
+for s in `cat bu.txt`
+do 
+surfreg --s $s --t fsaverage_sym --rh --xhemi 
+for m in $Measures
+do
+mris_apply_reg --src $s/surf/rh."$m"_z.sm.mgh --trg $s/xhemi/surf/rh."$m"_z_on_rh.sm.mgh --streg $SUBJECTS_DIR/$s/surf/rh.sphere.reg $SUBJECTS_DIR/fsaverage_sym/surf/rh.sphere.reg
+mris_apply_reg --src $s/surf/lh."$m"_z.sm.mgh --trg $s/xhemi/surf/lh."$m"_z_on_rh.sm.mgh --streg $SUBJECTS_DIR/$s/xhemi/surf/rh.fsaverage_sym.sphere.reg $SUBJECTS_DIR/fsaverage_sym/surf/rh.sphere.reg
+done
+done

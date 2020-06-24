@@ -1,0 +1,32 @@
+bash
+export FREESURFER_HOME=/usr/local/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+for s in `cat bu.txt`
+do 
+mri_convert --no_scale 1 ../../images/control/"$s"/anat.nii "$s"/mri/orig/ANAT.mgz
+bbregister --s "$s" --mov "$s"/mri/orig/ANAT.mgz --lta "$s"/mri/transforms/ANAT.lta --init-fsl --T1
+mri_convert -odt short -at "$s"/mri/transforms/ANAT.lta -rt cubic -ns 1 -rl "$s"/mri/orig.mgz "$s"/mri/orig/ANAT.mgz "$s"/mri/ANAT.prenorm.mgz
+cp "$s"/mri/aseg.auto.mgz "$s"/mri/aseg.presurf.mgz
+mri_normalize -sigma 0.5 -nonmax_suppress 0 -min_dist 1 -aseg "$s"/mri/aseg.presurf.mgz -surface "$s"/surf/rh.white identity.nofile -surface "$s"/surf/lh.white identity.nofile "$s"/mri/ANAT.prenorm.mgz "$s"/mri/ANAT.mgz
+
+mri_convert --no_scale 1 ../../images/control/"$s"/flair.nii "$s"/mri/orig/FLAIR.mgz
+bbregister --s "$s" --mov "$s"/mri/orig/FLAIR.mgz --lta "$s"/mri/transforms/FLAIR.lta --init-fsl --T2
+mri_convert -odt short -at "$s"/mri/transforms/FLAIR.lta -rt cubic -ns 1 -rl "$s"/mri/orig.mgz "$s"/mri/orig/FLAIR.mgz "$s"/mri/FLAIR.prenorm.mgz
+cp "$s"/mri/aseg.auto.mgz "$s"/mri/aseg.presurf.mgz
+mri_normalize -sigma 0.5 -nonmax_suppress 0 -min_dist 1 -aseg "$s"/mri/aseg.presurf.mgz -surface "$s"/surf/rh.white identity.nofile -surface "$s"/surf/lh.white identity.nofile "$s"/mri/FLAIR.prenorm.mgz "$s"/mri/FLAIR.mgz
+
+mri_convert --no_scale 1 ../../images/control/"$s"/t2.nii "$s"/mri/orig/T2.mgz
+bbregister --s "$s" --mov "$s"/mri/orig/T2.mgz --lta "$s"/mri/transforms/T2.lta --init-fsl --T2
+mri_convert -odt short -at "$s"/mri/transforms/T2.lta -rt cubic -ns 1 -rl "$s"/mri/orig.mgz "$s"/mri/orig/T2.mgz "$s"/mri/T2.prenorm.mgz
+cp "$s"/mri/aseg.auto.mgz "$s"/mri/aseg.presurf.mgz
+mri_normalize -sigma 0.5 -nonmax_suppress 0 -min_dist 1 -aseg "$s"/mri/aseg.presurf.mgz -surface "$s"/surf/rh.white identity.nofile -surface "$s"/surf/lh.white identity.nofile "$s"/mri/T2.prenorm.mgz "$s"/mri/T2.mgz
+
+mri_convert --no_scale 1 ../../images/control/"$s"/pet.nii "$s"/mri/orig/PET.mgz
+bbregister --s "$s" --mov "$s"/mri/orig/PET.mgz --lta "$s"/mri/transforms/PET.lta --init-fsl --T2
+mri_convert -odt short -at "$s"/mri/transforms/PET.lta -rt cubic -ns 1 -rl "$s"/mri/orig.mgz "$s"/mri/orig/PET.mgz "$s"/mri/PET.prenorm.mgz
+cp "$s"/mri/aseg.auto.mgz "$s"/mri/aseg.presurf.mgz
+mri_normalize -sigma 0.5 -nonmax_suppress 0 -min_dist 1 -aseg "$s"/mri/aseg.presurf.mgz -surface "$s"/surf/rh.white identity.nofile -surface "$s"/surf/lh.white identity.nofile "$s"/mri/PET.prenorm.mgz "$s"/mri/PET.mgz
+done
+

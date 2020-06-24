@@ -1,0 +1,18 @@
+# env tksurfer
+bash
+export FREESURFER_HOME=/usr/local/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+SUBJECTS_DIR=$PWD
+
+## coregistration and PVC
+for s in `cat bu.txt`; do
+gtmseg --s $s
+mri_gtmpvc --i ../../images/control/$s/flair.nii --reg $s/mri/transforms/FLAIR.lta --psf 5 --seg gtmseg.mgz --default-seg-merge --auto-mask PSF .01 --mgx .01 --o $s/gtmpvc.FLAIR
+done
+
+## QC
+for s in `cat bu.txt`; do
+tkregisterfv --mov ../../images/hs/$s/flair.nii --targ $s/mri/brainmask.mgz --reg $s/FLAIR.reg.lta --s $s --surfs 
+done
+
+
